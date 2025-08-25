@@ -14,7 +14,7 @@ COPY  . .
 # Set environment variables
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
-ENV FLASK_RUN_PORT=5050
+ENV FLASK_RUN_PORT=5005
 
 # Expose the port Flask runs on
 EXPOSE 5050

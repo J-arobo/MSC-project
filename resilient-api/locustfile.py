@@ -24,4 +24,11 @@ class ResilientUser(HttpUser):
         #Log the payload being sent
         print(f"Sending payload: {payload}")
 
-        self.client.post("/resilient-api/process", json=payload)
+        #Naive API
+        naive_response = self.client.post("/naive-api/process", json=payload, name="Naive API")
+        #Reactive API
+        reactive_response = self.client.post("/reactive-api/process", json=payload, name="Reactive API")
+        #Resilient API
+        resilient_response = self.client.post("/resilient-api/process", json=payload, name= "Resilient API")
+        #Antifragile API
+        antifragile_response = self.client.post("/antifragile-api/process", json=payload, name= "Antifragile API")

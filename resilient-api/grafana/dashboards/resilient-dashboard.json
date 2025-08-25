@@ -1,0 +1,108 @@
+{
+    "id": null,
+    "uid": "Resilient Api Observability",
+    "title": "Resilient API Observability",
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "10s",
+    "panels": [
+      {
+        "type": "graph",
+        "title": "Requests Over Time",
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(resilient_requests_total[1m])",
+            "legendFormat": "Requests/min",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "type": "piechart",
+        "title": "Stressor Type Distribution",
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "resilient_stressor_type_total",
+            "legendFormat": "{{type}}",
+            "refId": "B"
+          }
+        ],
+        "options": {
+          "legend": { "displayMode": "table", "placement": "right" },
+          "pieType": "pie"
+        }
+      },
+      {
+        "type": "graph",
+        "title": "Fallback Frequency",
+        "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(resilient_fallback_total[1m])",
+            "legendFormat": "Fallbacks/min",
+            "refId": "C"
+          }
+        ]
+      },
+      {
+        "type": "graph",
+        "title": "Retry Success Rate",
+        "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+        "targets": [
+          {
+            "expr": "rate(resilient_retry_success_total[1m])",
+            "legendFormat": "Retries/min",
+            "refId": "D"
+          }
+        ]
+      },
+      {
+        "type": "heatmap",
+        "title": "Latency Distribution",
+        "gridPos": { "x": 0, "y": 16, "w": 24, "h": 10 },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(resilient_latency_seconds_bucket[1m])) by (le))",
+            "legendFormat": "95th percentile",
+            "refId": "E"
+          }
+        ],
+        "heatmap": {
+          "color": {
+            "mode": "spectrum"
+          }
+        }
+      },
+      {
+        "type": "stat",
+        "title": "Resilience Score (Retries / Fallbacks)",
+        "gridPos": { "x": 0, "y": 26, "w": 6, "h": 4 },
+        "targets": [
+          {
+            "expr": "antifragile_retry_success_total / (resilient_fallback_total + 1)",
+            "refId": "F"
+          }
+        ],
+        "options": {
+          "reduceOptions": {
+            "calcs": ["lastNotNull"],
+            "fields": "",
+            "values": false
+          },
+          "colorMode": "value",
+          "graphMode": "none",
+          "justifyMode": "center"
+        }
+      }
+    ],
+    "templating": {
+      "list": []
+    },
+    "annotations": {
+      "list": []
+    }
+  }
+  

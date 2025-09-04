@@ -1,5 +1,10 @@
 #version: '3.9'
 
+networks:
+  observability:
+    driver: bridge
+ 
+
 services:
   app:
     build:
@@ -8,6 +13,10 @@ services:
     container_name: resilient-api
     ports:
       - "5002:5002"
+    networks:
+      - observability
+    volumes:
+      - .:/app
     restart: always
 
   locust:
@@ -15,17 +24,24 @@ services:
       context: .
       dockerfile: dockerfile.locust.l
     container_name: locust-tester
+    volumes:
+      - .:/app
     ports:
       - "8090:8089" #remaping 8090 t0 8089
     depends_on:
       - app
+    networks:
+      - observability
 
   prometheus:
     image: prom/prometheus
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - .:/app
     ports:
       - "9090:9090"
+    networks: #to make sure it talks with loki
+      - observability
 
   grafana:
     image: grafana/grafana
@@ -35,7 +51,19 @@ services:
       - ./grafana/dashboards:/var/lib/grafana/dashboards
       - ./grafana/datasources:/etc/grafana/provisioning/datasources
       - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - .:/app
 
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks: #to make sure it talks with loki
+      - observability
+
+  loki:
+    image: grafana/loki:latest
+    volumes:
+      - .:/app
+    ports:
+      - "3100:3100"
+    networks:
+      - observability   #to make sure it talks with grafana

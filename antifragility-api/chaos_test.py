@@ -24,7 +24,7 @@ URL = {
 def generate_payload():
     return {"value": random.choice([10, 0, -5, 1.5, 999999, "invalid", None])}
 
-for i in range(1):  # Send 50 requests
+for i in range(3):  # Send 50 requests
     payload = generate_payload()
     try:
         response = requests.post(URL["antifragile"], json=payload)

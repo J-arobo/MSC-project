@@ -52,10 +52,24 @@ To intensify chaos:
 
 
 
-"
+"  
 to run: docker-compose up --build
 
 to tear down: docker-compose down
+
+http://localhost:5002/metrics - metrics
+
+http://localhost:5002/train-model - checking the training model
+
+http://loki:3100 - url for adding a new data set
+
+http://localhost:5002/generate-feature-importance - historgram
+
+Query - resilient_chaos_origin_total{origin=~"ai|random"}
+
+AI vs Random Injection Over Time	Time Series	resilient_chaos_origin_total{origin=~"ai|random"}
+
+latency distribution use - sum(rate(resilient_latency_seconds_bucket[1m])) by (le, stressor)
 "
 
 
@@ -139,3 +153,91 @@ Observe console output:
 
 N/B: 
 We are using both locust and script to simulate requests and apply stress on our flask API
+
+
+
+
+
+What we are adding
+1. Behavioral learning from Chaos Events
+Instead of just logging chaos injections, i use them to train lightweight models that predict failure patterns or recommend fallback strategies.
+ - learning.py - module that handles:
+      a. Feature extraction from logs
+      b. Model training
+      c. Prediction of fallback sucess
+
+2. AI driven chaos injections
+    Instead of randomly choosing stressors, your system uses a model to:
+
+    Predict which stressor is most likely to cause failure
+
+    Inject that stressor to test resilience
+
+    Learn from the outcome and refine future injections
+
+    This turns chaos into a targeted diagnostic tool—like a doctor probing for symptoms, not just throwing punches.
+
+
+To do:
+- visualise all the modules - e.g, AI vs Random Chaos Effectiveness in Grafana
+
+
+
+AI DRIVEN CHAOS INJECTIONS
+
+
+
+
+
+
+
+
+
+"""
+What The CSV Rows Represent
+stressor: Type of chaos injected (none, latency, failure, timeout)
+
+value: Input value sent to the API
+
+result: Output or fallback result (use -1 if operation failed completely)
+
+success: 1 if operation succeeded, 0 if it failed
+
+fallback_used: 1 if fallback logic was triggered
+
+cpu, mem: System metrics at time of request
+
+prediction: Model’s prediction (1 for success, 0 for failure)
+
+confidence: Model’s confidence score (0–1)
+
+injected_by_ai: 1 if stressor was chosen by AI, 0 if random
+"""
+
+
+
+What We’ll Visualize
+You’ve already got structured logs with injected_by_ai, stressor, fallback_used, and confidence. Let’s turn those into panels that answer:
+
+How often does AI choose each stressor?
+
+Does AI injection lead to more fallbacks (i.e. smarter probing)?
+
+How does prediction confidence correlate with fallback usage?
+
+
+
+
+
+To solve 
+
+1. change the accuracy - ##Done
+1. show the plotted plot.✅ 
+3. plot the various panels in grafana.
+4. why used_ai = 0 and not 1
+5. log in injected by AI
+1. It gives me a number multiplied by 1/2 every time
+
+After waking up , start with the plot solution then go to panel drain
+
+✅ M
